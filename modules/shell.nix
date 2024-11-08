@@ -1,7 +1,17 @@
 { config, pkgs, ... }:
 
 {
-  # 确保 zsh 相关包被安装
+  # 系统级 zsh 配置
+  programs.zsh = {
+    enable = true;
+    # 确保 oh-my-zsh 在系统级别可用
+    ohMyZsh = {
+      enable = true;
+      package = pkgs.oh-my-zsh;
+    };
+  };
+
+  # 确保必要的包被安装
   environment.systemPackages = with pkgs; [
     zsh
     oh-my-zsh
@@ -10,85 +20,86 @@
     kubectx
   ];
 
-  # 启用 zsh
-  programs.zsh.enable = true;
+  # 设置默认 shell
+  users.defaultUserShell = pkgs.zsh;
 
   # 用户级配置
   home-manager.users.yym = { pkgs, ... }: {
-    home.stateVersion = "24.05";
+    home = {
+      stateVersion = "24.05";
+      
+      # 确保 zsh 配置目录存在
+      file.".zsh".recursive = true;
+    };
     
-    programs = {
-      zsh = {
+    programs.zsh = {
+      enable = true;
+      
+      # oh-my-zsh 配置
+      oh-my-zsh = {
         enable = true;
-        
-        # oh-my-zsh 配置
-        oh-my-zsh = {
-          enable = true;
-          theme = "dracula";
-          plugins = [
-            "git"
-            "autojump"
-            "history-substring-search"
-            "fzf"
-            "kubectl"
-          ];
-        };
-
-        # zsh 插件
+        theme = "dracula";
         plugins = [
-          {
-            name = "zsh-autosuggestions";
-            src = pkgs.fetchFromGitHub {
-              owner = "zsh-users";
-              repo = "zsh-autosuggestions";
-              rev = "v0.7.0";
-              sha256 = "sha256-KLUYpUu4DHRumQZ3w59m9aTW6TBKMCXl2UcKi4uMd7w=";
-            };
-          }
-          {
-            name = "zsh-syntax-highlighting";
-            src = pkgs.fetchFromGitHub {
-              owner = "zsh-users";
-              repo = "zsh-syntax-highlighting";
-              rev = "0.7.1";
-              sha256 = "sha256-gOG0NLlaJfotJfs+SUhGgLTNOnGLjoqnUp54V9aFJg8=";
-            };
-          }
+          "git"
+          "autojump"
+          "history-substring-search"
+          "fzf"
+          "kubectl"
         ];
+      };
 
-        initExtra = ''
-          # 基础配置
-          export ZSH=${pkgs.oh-my-zsh}/share/oh-my-zsh
-          source $ZSH/oh-my-zsh.sh
+      # 插件配置
+      plugins = [
+        {
+          name = "zsh-autosuggestions";
+          src = pkgs.fetchFromGitHub {
+            owner = "zsh-users";
+            repo = "zsh-autosuggestions";
+            rev = "v0.7.0";
+            sha256 = "sha256-KLUYpUu4DHRumQZ3w59m9aTW6TBKMCXl2UcKi4uMd7w=";
+          };
+        }
+        {
+          name = "zsh-syntax-highlighting";
+          src = pkgs.fetchFromGitHub {
+            owner = "zsh-users";
+            repo = "zsh-syntax-highlighting";
+            rev = "0.7.1";
+            sha256 = "sha256-gOG0NLlaJfotJfs+SUhGgLTNOnGLjoqnUp54V9aFJg8=";
+          };
+        }
+      ];
 
-          # fzf 配置
-          export FZF_BASE=${pkgs.fzf}/bin/fzf
-          export FZF_COMPLETION_TRIGGER='~~'
+      # 初始化配置
+      initExtraFirst = ''
+        # 基础环境变量
+        export SHELL=${pkgs.zsh}/bin/zsh
+        export ZSH=${pkgs.oh-my-zsh}/share/oh-my-zsh
+      '';
 
-          # 其他配置
-          ${builtins.readFile "${pkgs.oh-my-zsh}/share/oh-my-zsh/templates/zshrc.zsh-template"}
-        '';
+      initExtra = ''
+        # 加载 oh-my-zsh
+        source $ZSH/oh-my-zsh.sh
 
-        # 别名配置
-        shellAliases = {
-          k = "kubectl";
-          dk = "docker";
-          dkc = "docker-compose";
-          c = "clear";
-        };
+        # fzf 配置
+        export FZF_BASE=${pkgs.fzf}/bin/fzf
+        export FZF_COMPLETION_TRIGGER='~~'
+      '';
 
-        # 环境变量
-        sessionVariables = {
-          GOPROXY = "https://goproxy.cn,direct";
-          ZSH_THEME = "dracula";
-        };
+      # 别名配置
+      shellAliases = {
+        k = "kubectl";
+        dk = "docker";
+        dkc = "docker-compose";
+        c = "clear";
+      };
+
+      # 环境变量
+      sessionVariables = {
+        GOPROXY = "https://goproxy.cn,direct";
+        ZSH_THEME = "dracula";
       };
     };
-
-    # 确保 .zshrc 不被其他程序修改
-    home.file.".zshrc".enable = false;
   };
 
-  # 全局 shell 设置
-  users.defaultUserShell = pkgs.zsh;
 } 
