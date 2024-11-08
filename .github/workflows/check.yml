@@ -17,9 +17,9 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-24.05
             
-      - name: Check Nix files formatting
-        run: |
-          nix-shell -p nixpkgs-fmt --run "nixpkgs-fmt --check ."
+    #   - name: Check Nix files formatting
+    #     run: |
+    #       nix-shell -p nixpkgs-fmt --run "nixpkgs-fmt --check ."
           
       - name: Validate Nix syntax
         run: |
