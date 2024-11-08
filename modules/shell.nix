@@ -2,6 +2,8 @@
 
 {
   home-manager.users.yym = { pkgs, ... }: {
+    home.stateVersion = "24.05";
+    
     programs = {
       # zsh 配置
       zsh = {
