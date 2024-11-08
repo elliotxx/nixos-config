@@ -17,68 +17,66 @@
 ├── README.md                 # 本文档
 ├── docs/                     # 详细文档
 │   └── guides/              # 使用指南
-└── modules/                  # 模块目录
-    ├── boot.nix             # 引导加载程序配置
-    ├── desktop.nix          # 桌面环境配置
-    ├── networking.nix       # 网络配置
-    ├── packages.nix         # 系统软件包配置
-    ├── services.nix         # 系统服务配置
-    ├── shell.nix           # Shell 环境配置
-    └── users.nix            # 用户配置
+├── modules/                  # 模块目录
+│   ├── boot.nix             # 引导加载程序配置
+│   ├── desktop.nix          # 桌面环境配置
+│   ├── networking.nix       # 网络配置
+│   ├── packages.nix         # 系统软件包配置
+│   ├── services.nix         # 系统服务配置
+│   ├── shared.nix           # 共享配置（如 zsh 配置）
+│   └── shell.nix           # Shell 环境配置
+└── users/                    # 用户配置目录
+    └── elliotxx/            # 个人用户配置
+        ├── default.nix      # 用户创建和权限配置
+        └── home.nix         # home-manager 配置
 ```
 
 ## 模块说明
 
-### boot.nix
-- systemd-boot 引导加载程序（替代传统的 GRUB）
+### 系统模块
+
+#### boot.nix
+- systemd-boot 引导加载程序
 - EFI 变量支持
 
-### desktop.nix
+#### desktop.nix
 - KDE Plasma 5 桌面环境
 - SDDM 显示管理器
 - Fcitx5 中文输入法支持
-  - 中文输入
-  - 配置工具
 
-### shell.nix
-- Zsh 配置
-- Oh-My-Zsh 设置
-  - dracula 主题
-  - 实用插件（git, fzf, kubectl 等）
-  - 语法高亮
-  - 命令自动补全
-- 开发工具集成
-  - FZF 模糊查找
-  - Autojump 快速目录跳转
-  - Kubernetes 工具
-  - Docker 快捷命令
-  - Go 开发环境
-
-### networking.nix
+#### networking.nix
 - NetworkManager 网络管理
-- 防火墙配置
-  - SSH (22)
-  - HTTP (80)
-  - HTTPS (443)
+- 防火墙配置（SSH/HTTP/HTTPS）
 
-### packages.nix
+#### packages.nix
 - 非自由软件支持
 - 清华大学镜像源
-- 基础工具
-  - Vim/Neovim
-  - Git
-  - Python 3.11
-  - Go 1.21
-  - Docker
+- 开发工具（Git/Python/Go/Docker）
 
-### services.nix
-- OpenSSH 服务
+#### services.nix
+- OpenSSH 服务配置
 
-### users.nix
-- 用户账户配置
-- 权限管理
-  - sudo（wheel 组）
-  - 网络管理
+### Shell 相关
+
+#### shared.nix
+- 共享的 Zsh 配置函数 (mkZshConfig)
+- Oh-My-Zsh 主题（dracula）
+- Shell 插件和工具配置
+
+#### shell.nix
+- 系统级 Zsh 配置
+- 必要包的安装（zsh/fzf/autojump）
+- 默认 Shell 设置
+
+### 用户配置
+
+用户配置位于 `users/` 目录下，每个用户有独立的配置目录：
+
+#### elliotxx/
+- `default.nix`: 用户创建和权限配置
+- `home.nix`: home-manager 配置
+  - Git 配置
+  - Zsh 用户配置（使用 shared.nix 中的 mkZshConfig）
 
 ## 快速开始
 
@@ -185,7 +183,7 @@ sudo nixos-rebuild switch --rollback
 
 欢迎提交 Pull Requests 来改进配置。请确保：
 1. 遵循现有的模块化结构
-2. 添加适当的中文注释
+2. 添加适当的注释
 3. 测试配置可以正常工作
 
 ## 许可
