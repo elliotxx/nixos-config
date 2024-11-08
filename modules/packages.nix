@@ -34,10 +34,20 @@
       "home-manager=https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz"
     ];
 
-    # 配置 registry
+    # 配置 registry，使用正确的属性集格式
     registry = {
-      nixos.flake = "github:NixOS/nixpkgs/nixos-24.05";
-      home-manager.flake = "github:nix-community/home-manager/release-24.05";
+      nixos.to = {
+        type = "github";
+        owner = "NixOS";
+        repo = "nixpkgs";
+        ref = "nixos-24.05";
+      };
+      home-manager.to = {
+        type = "github";
+        owner = "nix-community";
+        repo = "home-manager";
+        ref = "release-24.05";
+      };
     };
   };
 
