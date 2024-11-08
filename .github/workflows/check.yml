@@ -17,6 +17,11 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-24.05
             
+      - name: Setup Home Manager
+        run: |
+          nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz home-manager
+          nix-channel --update
+            
       - name: Validate Nix syntax
         run: |
           find . -name "*.nix" -type f -exec nix-instantiate --parse {} \;
@@ -51,6 +56,8 @@ jobs:
           
       - name: Check NixOS configuration
         run: |
+          export NIX_PATH=$NIX_PATH:home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager
+          
           # Validate main configuration
           nix-instantiate --expr "import <nixpkgs/nixos> { configuration = ./configuration.nix; }" --dry-run
           
