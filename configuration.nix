@@ -6,7 +6,7 @@
 
 {
   imports = [
-    <home-manager/nixos>
+    # 确保 home-manager 在其他模块之后导入
     ./hardware-configuration.nix
     ./modules/boot.nix
     ./modules/desktop.nix
@@ -15,6 +15,7 @@
     ./modules/services.nix
     ./modules/users.nix
     ./modules/shell.nix
+    <home-manager/nixos>
   ];
 
   # 确保使用最新的 home-manager

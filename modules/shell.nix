@@ -2,51 +2,69 @@
 
 {
   home-manager.users.yym = { pkgs, ... }: {
-    programs.zsh = {
-      enable = true;
-      
-      oh-my-zsh = {
+    programs = {
+      # zsh 配置
+      zsh = {
         enable = true;
-        theme = "dracula";
+        
+        oh-my-zsh = {
+          enable = true;
+          theme = "dracula";
+          plugins = [
+            "git"
+            "autojump"
+            "history-substring-search"
+            "fzf"
+            "kubectl"
+          ];
+        };
+
+        # 插件配置
         plugins = [
-          "git"
-          "zsh-autosuggestions"
-          "autojump"
-          "history-substring-search"
-          "fzf"
-          "kubectl"
+          {
+            name = "zsh-autosuggestions";
+            src = pkgs.fetchFromGitHub {
+              owner = "zsh-users";
+              repo = "zsh-autosuggestions";
+              rev = "v0.7.0";
+              sha256 = "sha256-KLUYpUu4DHRumQZ3w59m9aTW6TBKMCXl2UcKi4uMd7w=";
+            };
+          }
+          {
+            name = "zsh-syntax-highlighting";
+            src = pkgs.fetchFromGitHub {
+              owner = "zsh-users";
+              repo = "zsh-syntax-highlighting";
+              rev = "0.7.1";
+              sha256 = "sha256-gOG0NLlaJfotJfs+SUhGgLTNOnGLjoqnUp54V9aFJg8=";
+            };
+          }
         ];
-      };
 
-      # zsh 插件配置更新为新的语法
-      zplug = {
-        enable = true;
-        plugins = [
-          { name = "zsh-users/zsh-syntax-highlighting"; }
-          { name = "zsh-users/zsh-autosuggestions"; }
-        ];
-      };
+        # 初始化脚本
+        initExtraFirst = ''
+          # fzf 配置
+          export FZF_BASE=${pkgs.fzf}/bin/fzf
+          export FZF_COMPLETION_TRIGGER='~~'
+        '';
 
-      # 初始化脚本
-      initExtraFirst = ''
-        # fzf 配置
-        export FZF_BASE=${pkgs.fzf}/bin/fzf
-        export FZF_COMPLETION_TRIGGER='~~'
-      '';
+        # 别名配置
+        shellAliases = {
+          k = "kubectl";
+          dk = "docker";
+          dkc = "docker-compose";
+          c = "clear";
+        };
 
-      # 别名配置
-      shellAliases = {
-        k = "kubectl";
-        dk = "docker";
-        dkc = "docker-compose";
-        c = "clear";
-      };
-
-      # 环境变量
-      sessionVariables = {
-        GOPROXY = "https://goproxy.cn,direct";
+        # 环境变量
+        sessionVariables = {
+          GOPROXY = "https://goproxy.cn,direct";
+        };
       };
     };
+
+    # 确保创建 .zshrc
+    home.file.".zshrc".text = "";
   };
 
   # 系统级别配置
