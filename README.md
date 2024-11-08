@@ -133,33 +133,115 @@ git clone https://github.com/elliotxx/nixos-config.git .
 
 ## 个性化配置
 
-### 1. 基础配置修改
+### 1. 创建新用户
 
-- 修改用户信息 (`modules/users.nix`)：
-```nix
-users.users.your-username = {
-  isNormalUser = true;
-  home = "/home/your-username";
-  description = "Your Name";
-  extraGroups = [ "wheel" "networkmanager" ];
-};
+1. 在 users/ 目录下创建新用户目录：
+```bash
+mkdir -p users/your-username
 ```
 
-- 调整时区和语言 (`configuration.nix` 中添加)：
+2. 创建用户基本配置 (`users/your-username/default.nix`)：
 ```nix
-time.timeZone = "Asia/Shanghai";
-i18n.defaultLocale = "zh_CN.UTF-8";
+{ config, pkgs, ... }:
+
+{
+  # 创建用户
+  users.users.your-username = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" "docker" ];  # 根据需要调整权限组
+    shell = pkgs.zsh;
+  };
+}
 ```
 
-### 2. 软件包管理
+3. 创建用户 home-manager 配置 (`users/your-username/home.nix`)：
+```nix
+{ config, pkgs, ... }:
 
-- 添加常用软件 (`modules/packages.nix`)：
+let
+  shared = import ../../modules/shared.nix { inherit config pkgs; };
+in
+{
+  home-manager.users.your-username = { pkgs, ... }: {
+    # 启用 home-manager
+    programs.home-manager.enable = true;
+
+    # 基础配置
+    home = {
+      username = "your-username";
+      homeDirectory = "/home/your-username";
+      stateVersion = "24.05";  # 使用当前系统版本
+    };
+
+    # Git 配置
+    programs.git = {
+      enable = true;
+      userName = "Your Name";
+      userEmail = "your.email@example.com";
+    };
+
+    # 导入共享的 zsh 配置
+    imports = [ (shared.mkZshConfig) ];
+  };
+}
+```
+
+4. 在 configuration.nix 中导入新用户配置：
+```nix
+{
+  imports = [
+    # ... 其他导入
+    ./users/your-username  # 添加这一行
+  ];
+}
+```
+
+### 2. 调整系统设置
+
+- 修改时区和语言 (`configuration.nix`)：
+```nix
+{
+  # 时区设置
+  time.timeZone = "Asia/Shanghai";
+
+  # 语言设置
+  i18n = {
+    defaultLocale = "zh_CN.UTF-8";
+    supportedLocales = [ "zh_CN.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
+  };
+}
+```
+
+### 3. 添加软件包
+
+- 在 `modules/packages.nix` 中添加系统级软件包：
 ```nix
 environment.systemPackages = with pkgs; [
-  # 你的常用软件
-  firefox
+  # 开发工具
+  git
+  vim
   vscode
-  # ...
+  
+  # 浏览器
+  firefox
+  google-chrome
+  
+  # 其他工具
+  wget
+  curl
+];
+```
+
+- 在用户的 home.nix 中添加用户级软件包：
+```nix
+home.packages = with pkgs; [
+  # 开发工具
+  nodejs
+  yarn
+  
+  # 通讯工具
+  telegram-desktop
+  discord
 ];
 ```
 
