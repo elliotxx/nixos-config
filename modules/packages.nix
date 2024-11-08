@@ -1,38 +1,50 @@
 { config, pkgs, ... }:
 
 {
-  # 允许非自由软件
-  nixpkgs.config.allowUnfree = true;
-
-  # Nix 相关配置
+  # 配置 nix 包管理器
   nix = {
-    # 二进制缓存镜像源配置
-    # 使用清华源加速下载，同时保留官方源作为备用
-    settings.substituters = [ 
-      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"  # 清华源
-      "https://cache.nixos.org/"                                 # 官方源
+    settings = {
+      # 配置二进制缓存镜像
+      substituters = [
+        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+        "https://cache.nixos.org/"
+      ];
+      
+      # 信任公钥
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      ];
+      
+      # 自动优化存储
+      auto-optimise-store = true;
+    };
+    
+    # 垃圾回收设置
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+
+    # 配置 channels
+    nixPath = [
+      "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
+      "nixos-config=/etc/nixos/configuration.nix"
+      "/nix/var/nix/profiles/per-user/root/channels"
+      "home-manager=https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz"
     ];
 
-    # Channel 配置
-    # 启用 channel 功能并配置稳定版和不稳定版 channel
-    channel = {
-      enable = true;
-      channels = {
-        # 稳定版 channel - 使用 24.05 版本
-        nixos = {
-          url = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-24.05";
-          priority = 10;  # 较高优先级
-        };
-        # 不稳定版 channel - 用于获取最新特性
-        nixos-unstable = {
-          url = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable";
-          priority = 20;  # 较低优先级
-        };
-      };
+    # 配置 registry
+    registry = {
+      nixos.flake = "github:NixOS/nixpkgs/nixos-24.05";
+      home-manager.flake = "github:nix-community/home-manager/release-24.05";
     };
   };
 
-  # 系统软件包 - 更新 Python 版本
+  # 允许非自由软件
+  nixpkgs.config.allowUnfree = true;
+
+  # 系统软件包
   environment.systemPackages = with pkgs; [
     wget 
     vim 
