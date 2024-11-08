@@ -61,7 +61,3 @@ jobs:
           -qa --drv-path \
           --arg configuration ./configuration.nix \
           --show-trace
-
-    - name: Cleanup
-      if: always()
-      run: rm -rf /tmp/nixos-config

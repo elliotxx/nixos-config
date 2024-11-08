@@ -26,4 +26,4 @@ result-*
 .direnv/
 
 # 系统生成的文件
-/tmp/ 
+/tmp/
