@@ -11,12 +11,15 @@
   services.displayManager.sddm.enable = true;
 
   # 输入法配置 - 使用新的配置方式
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5.addons = with pkgs; [
-      fcitx5-chinese-addons
-      fcitx5-configtool
-    ];
+  i18n = {
+    inputMethod = {
+      enabled = "fcitx5";
+      fcitx5 = {
+        addons = with pkgs; [
+          fcitx5-chinese-addons
+          fcitx5-configtool
+        ];
+      };
+    };
   };
-} 
+}

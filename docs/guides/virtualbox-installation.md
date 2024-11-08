@@ -76,10 +76,10 @@ sudo nix-env -iA nixos.git
 # 克隆配置
 cd /mnt/etc/nixos
 sudo rm configuration.nix
-sudo git clone https://github.com/elliotxx/nixos-config.git .
-
-# 保留生成的硬件配置
-sudo cp /mnt/etc/nixos/configuration.nix.backup hardware-configuration.nix
+sudo git clone https://github.com/elliotxx/nixos-config.git
+sudo cp -r nixos-config/* .
+sudo cp -r nixos-config/.* . 2>/dev/null || true
+sudo rm -rf nixos-config
 ```
 
 5. 安装系统
