@@ -41,7 +41,7 @@
     autosuggestions.enable = true;
 
     # 添加自定义配置
-    initExtra = ''
+    interactiveShellInit = ''
       # fzf 配置
       export FZF_BASE=${pkgs.fzf}/bin/fzf
       export FZF_COMPLETION_TRIGGER='~~'
