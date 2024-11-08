@@ -200,6 +200,63 @@ sudo nix-collect-garbage -d
 sudo nix-store --optimise
 ```
 
+## NixOS 重建系统
+
+### nixos-rebuild 命令说明
+
+nixos-rebuild 是 NixOS 中最重要的系统管理命令，用于应用系统配置更改、升级系统和切换系统版本。
+
+#### 常用命令
+
+1. **测试配置**
+```bash
+# 构建新配置但不激活，用于测试
+sudo nixos-rebuild test
+
+# 测试配置并输出详细日志
+sudo nixos-rebuild test -v
+```
+
+2. **切换配置**
+```bash
+# 构建并激活新配置
+sudo nixos-rebuild switch
+
+# 升级系统并切换到新配置
+sudo nixos-rebuild switch --upgrade
+```
+
+3. **回滚操作**
+```bash
+# 回滚到上一个配置
+sudo nixos-rebuild switch --rollback
+
+# 查看系统代数
+sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+
+# 回滚到特定代数
+sudo nixos-rebuild switch --rollback-to-generation 123
+```
+
+#### 重要参数说明
+- test: 构建并临时激活，重启后恢复
+- switch: 构建并永久激活
+- build: 仅构建不激活
+- boot: 构建但下次重启才激活
+- --upgrade: 同时升级系统
+--rollback: 回滚到上一版本
+-v 或 --verbose: 显示详细输出
+
+#### 配置更改流程
+1. 先用 `test` 测试
+2. 确认无误后 `switch`
+3. 出问题就 `rollback`
+
+#### 系统维护建议
+- 定期更新系统
+- 保留几个可用的旧版本
+- 重要更改前备份
+
 ## 故障排除
 
 1. 如果无法启动：
@@ -214,6 +271,11 @@ nix-instantiate --parse /etc/nixos/configuration.nix
 3. 查看详细日志：
 ```bash
 journalctl -xb
+```
+
+4. 查看系统代数：
+```bash
+sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
 ```
 
 ## 提示
