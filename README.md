@@ -51,20 +51,41 @@
 
 ### 初次使用
 
+#### 方案一：使用 curl 下载（推荐）
+
+如果系统中没有 git 和 wget，可以使用 curl：
+
 1. 备份当前系统配置：
 ```bash
 sudo cp -r /etc/nixos /etc/nixos.backup
 ```
 
-2. 克隆配置到系统：
+2. 下载配置文件：
 ```bash
 cd /etc/nixos
-git clone <repository-url> .
+# 下载仓库压缩包
+curl -f -L -# https://github.com/elliotxx/nixos-config/archive/refs/heads/main.zip -o main.zip
+# 解压文件
+unzip main.zip
+# 移动文件到当前目录
+mv nixos-config-main/* .
+mv nixos-config-main/.* . 2>/dev/null || true
+# 清理临时文件
+rm -rf nixos-config-main main.zip
 ```
 
-3. 复制硬件配置：
+#### 方案二：先安装 git
+
+1. 安装 git：
 ```bash
-cp /etc/nixos.backup/hardware-configuration.nix .
+sudo nix-env -iA nixos.git
+```
+
+2. 然后按照常规步骤操作：
+```bash
+cd /etc/nixos
+sudo cp -r /etc/nixos /etc/nixos.backup
+git clone https://github.com/elliotxx/nixos-config.git .
 ```
 
 ### 个性化配置
