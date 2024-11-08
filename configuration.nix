@@ -15,6 +15,9 @@
     ./modules/users.nix
   ];
 
+  # 设置时区为上海
+  time.timeZone = "Asia/Shanghai";
+
   # 系统状态版本
   system.stateVersion = "24.05";
 }
