@@ -27,9 +27,6 @@
   home-manager.users.yym = { pkgs, ... }: {
     home = {
       stateVersion = "24.05";
-      
-      # 确保 zsh 配置目录存在
-      file.".zsh".recursive = true;
     };
     
     programs.zsh = {
@@ -101,5 +98,4 @@
       };
     };
   };
-
 } 
