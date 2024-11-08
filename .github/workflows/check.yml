@@ -23,7 +23,8 @@ jobs:
 
     - name: Create Temporary Hardware Config
       run: |
-        cat > hardware-configuration.nix << 'EOF'
+        mkdir -p /tmp/nixos-config
+        cat > /tmp/nixos-config/hardware-configuration.nix << 'EOF'
         { config, lib, pkgs, modulesPath, ... }:
         {
           imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
@@ -38,17 +39,31 @@ jobs:
           swapDevices = [ ];
         }
         EOF
+        cp -r . /tmp/nixos-config/
+        cd /tmp/nixos-config
 
-    - name: Check Configuration Syntax
-      run: nix-instantiate --parse configuration.nix
-
-    - name: Evaluate Configuration
+    - name: Check Configuration Files
       run: |
-        nix-env -p /nix/var/nix/profiles/system --file '<nixpkgs/nixos>' -qa --drv-path --arg configuration ./configuration.nix
-
-    - name: Check Module Configurations
-      run: |
+        # Check main configuration syntax
+        echo "Checking configuration.nix syntax..."
+        nix-instantiate --parse configuration.nix
+        
+        # Check module configuration syntax
+        echo "Checking module configurations..."
         for module in modules/*.nix; do
-          echo "Checking module: $module"
+          echo "Checking syntax: $module"
           nix-instantiate --parse "$module"
-        done 
+        done
+
+    - name: Evaluate Full Configuration
+      run: |
+        echo "Evaluating complete NixOS configuration..."
+        nix-env -p /nix/var/nix/profiles/system \
+          --file '<nixpkgs/nixos>' \
+          -qa --drv-path \
+          --arg configuration ./configuration.nix \
+          --show-trace
+
+    - name: Cleanup
+      if: always()
+      run: rm -rf /tmp/nixos-config
