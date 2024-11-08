@@ -24,7 +24,7 @@ jobs:
       - name: Generate hardware configuration
         run: |
           # Install nixos-generate-config
-          nix-env -iA nixos.nixos-install-tools
+          nix-env -iA nixpkgs.nixos-generate-config
           
           # Generate hardware configuration
           sudo nixos-generate-config --no-filesystems --show-hardware-config > hardware-configuration.nix
