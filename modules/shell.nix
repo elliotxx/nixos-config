@@ -1,10 +1,18 @@
 { config, pkgs, ... }:
 
+let
+  # 获取 dracula 主题
+  dracula-theme = pkgs.fetchFromGitHub {
+    owner = "dracula";
+    repo = "zsh";
+    rev = "v1.2.5";  # 使用固定版本
+    sha256 = "sha256-qsDXqhqGz9WPi70yFmHXNXUP4XjnR4q7Ll8AQfXcz0k=";
+  };
+in
 {
   # 系统级 zsh 配置
   programs.zsh = {
     enable = true;
-    # 确保 oh-my-zsh 在系统级别可用
     ohMyZsh = {
       enable = true;
       package = pkgs.oh-my-zsh;
@@ -20,13 +28,21 @@
     kubectx
   ];
 
-  # 设置默认 shell
-  users.defaultUserShell = pkgs.zsh;
-
   # 用户级配置
   home-manager.users.yym = { pkgs, ... }: {
     home = {
       stateVersion = "24.05";
+      
+      # 安装 dracula 主题
+      file = {
+        ".oh-my-zsh/custom/themes/dracula.zsh-theme" = {
+          source = "${dracula-theme}/dracula.zsh-theme";
+        };
+        ".oh-my-zsh/custom/lib/lib" = {
+          source = "${dracula-theme}/lib";
+          recursive = true;
+        };
+      };
     };
     
     programs.zsh = {
@@ -94,8 +110,10 @@
       # 环境变量
       sessionVariables = {
         GOPROXY = "https://goproxy.cn,direct";
-        ZSH_THEME = "dracula";
       };
     };
   };
+
+  # 设置默认 shell
+  users.defaultUserShell = pkgs.zsh;
 } 
