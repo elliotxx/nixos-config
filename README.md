@@ -51,9 +51,8 @@
 
 ### 初次使用
 
-#### 方案一：使用 curl 下载（推荐）
-
-如果系统中没有 git 和 wget，可以使用 curl：
+#### 重要提示
+在使用此配置之前，请确保有正确的 hardware-configuration.nix 文件，这个文件包含了您系统的硬件配置信息。
 
 1. 备份当前系统配置：
 ```bash
@@ -68,10 +67,23 @@ curl -f -L -# https://github.com/elliotxx/nixos-config/archive/refs/heads/main.z
 # 解压文件
 unzip main.zip
 # 移动文件到当前目录
-mv nixos-config-main/* .
-mv nixos-config-main/.* . 2>/dev/null || true
+cp nixos-config-main/* .
+cp nixos-config-main/.* . 2>/dev/null || true
 # 清理临时文件
 rm -rf nixos-config-main main.zip
+```
+
+3. 处理硬件配置文件：
+
+方案一：从备份恢复（如果有备份）：
+```bash
+cp /etc/nixos.backup/hardware-configuration.nix .
+```
+
+方案二：重新生成（如果没有备份）：
+```bash
+# 生成新的硬件配置
+sudo nixos-generate-config --show-hardware-config > hardware-configuration.nix
 ```
 
 #### 方案二：先安装 git
