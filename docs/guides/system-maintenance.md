@@ -321,3 +321,133 @@ sudo reboot
 - 重要服务器的更改最好在维护窗口进行
 - 保持至少一个已知正常的配置版本
 - 重启前确保关键服务已正确保存状态
+
+### NixOS 命令工作原理
+
+#### nixos-rebuild 工作流程
+
+1. `nixos-rebuild switch` 背后的过程：
+   ```bash
+   nixos-rebuild switch
+   ```
+   - 读取 `/etc/nixos/configuration.nix` 及其导入的所有模块
+   - 解析所有配置，生成系统闭包（closure）
+   - 构建新的系统配置到 `/nix/store`
+   - 创建新的系统配置文件链接
+   - 更新 GRUB/systemd-boot 引导配置
+   - 重启受影响的系统服务
+   - 更新 `/run/current-system` 符号链接
+
+2. `nixos-rebuild test` 的区别：
+   ```bash
+   nixos-rebuild test
+   ```
+   - 执行与 switch 相同的构建过程
+   - 但不更新 boot loader 配置
+   - 不创建持久的系统配置链接
+   - 仅临时激活新配置用于测试
+   - 重启后会恢复到之前的配置
+
+3. `nixos-rebuild boot` 的特点：
+   ```bash
+   nixos-rebuild boot
+   ```
+   - 构建新系统配置
+   - 更新 boot loader 配置
+   - 添加新配置到启动选项
+   - 但不立即激活新配置
+   - 下次重启时才会使用新配置
+
+#### nix-channel 命令解析
+
+1. `nix-channel --update` 过程：
+   ```bash
+   nix-channel --update
+   ```
+   - 获取配置的 channel URL
+   - 下载最新的 channel 元数据
+   - 更新 `/nix/var/nix/profiles/per-user/root/channels`
+   - 更新 channel 的 nixpkgs 数据库
+   - 生成新的 channel 二进制缓存
+
+2. `nix-channel --list` 工作原理：
+   ```bash
+   nix-channel --list
+   ```
+   - 读取 `~/.nix-channels`（普通用户）或 `/root/.nix-channels`（root 用户）
+   - 显示已配置的 channel 名称和 URL
+   - 检查 channel 的本地缓存状态
+
+#### nix-collect-garbage 详解
+
+1. `nix-collect-garbage -d` 执行过程：
+   ```bash
+   nix-collect-garbage -d
+   ```
+   - 确定可达性（reachability）从 GC roots
+   - 标记所有当前使用的路径
+   - 删除未被标记的路径
+   - 清理 /nix/store 中未引用的文件
+   - 删除旧的系统配置
+   - 更新 boot loader 配置
+
+2. 垃圾回收的保护机制：
+   - 活动配置文件被保护
+   - 当前使用的包被保护
+   - boot.loader.configurationLimit 控制保留配置数量
+   - 通过 nix.gc.automatic 配置自动清理
+
+#### home-manager 命令原理
+
+1. `home-manager switch` 过程：
+   ```bash
+   home-manager switch
+   ```
+   - 读取用户的 home-manager 配置
+   - 解析依赖关系
+   - 构建用户环境
+   - 生成配置文件（如 .zshrc）
+   - 创建必要的符号链接
+   - 更新用户环境变量
+
+2. 配置生效机制：
+   - 用户级配置立即生效
+   - 创建/更新 ~/.config 下的配置
+   - 管理 dotfiles
+   - 处理软件包安装
+
+#### 系统回滚机制
+
+1. `nixos-rebuild switch --rollback` 工作流程：
+   ```bash
+   nixos-rebuild switch --rollback
+   ```
+   - 读取上一个系统配置的链接
+   - 验证配置的完整性
+   - 切换系统符号链接
+   - 更新 boot loader 配置
+   - 重启相关服务
+
+2. 配置版本管理：
+   - 保存在 /nix/var/nix/profiles/system-*
+   - 维护配置的时间戳和版本信息
+   - 通过 boot loader 提供多版本选择
+   - 支持在启动时选择不同配置
+
+#### 重要文件位置
+
+1. 系统配置相关：
+   - `/etc/nixos/` - NixOS 配置目录
+   - `/nix/store/` - Nix 包存储
+   - `/nix/var/nix/profiles/` - 系统配置档案
+   - `/run/current-system` - 当前系统配置链接
+
+2. 用户配置相关：
+   - `~/.config/nixpkgs/` - 用户包配置
+   - `~/.nix-profile/` - 用户环境配置
+   - `~/.nix-channels` - 用户 channel 配置
+
+3. 缓存和数据：
+   - `/nix/var/nix/gcroots/` - GC roots
+   - `/nix/var/nix/db/` - Nix 数据库
+   - `/nix/var/nix/profiles/` - 配置档案
