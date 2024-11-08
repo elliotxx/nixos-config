@@ -1,0 +1,73 @@
+name: "Create Release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get previous tag
+        id: previoustag
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          echo "## NixOS Configuration Changes" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+          # Function to append changelog sections
+          append_section() {
+            local title=$1
+            local grep_pattern=$2
+            local content=$(git log ${{ steps.previoustag.outputs.tag }}..HEAD --pretty=format:"- %s (%h)" --grep="$grep_pattern")
+            if [ ! -z "$content" ]; then
+              echo "$title" >> CHANGELOG.md
+              echo "$content" >> CHANGELOG.md
+              echo "" >> CHANGELOG.md
+            fi
+          }
+
+          # Add sections by commit type
+          append_section "### ✨ Features" "^feat"
+          append_section "### 🐛 Bug Fixes" "^fix"
+          append_section "### 📝 Documentation" "^docs"
+          append_section "### 💄 Styles" "^style"
+          append_section "### ♻️ Refactoring" "^refactor"
+          append_section "### ⚡️ Performance" "^perf"
+          append_section "### 🔧 Maintenance" "^chore"
+          append_section "### 📦 Build System" "^build"
+          append_section "### 👷 CI/CD" "^ci"
+          append_section "### ⬆️ Dependencies" "^deps"
+          append_section "### ⏪ Reverts" "^revert"
+
+          # Add full changelog link
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previoustag.outputs.tag }}...${{ github.ref_name }}" >> CHANGELOG.md
+
+    #   - name: Verify NixOS Configuration
+    #     run: |
+    #       nix-env -i nixos-rebuild
+    #       nixos-rebuild build --flake .#
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: false
