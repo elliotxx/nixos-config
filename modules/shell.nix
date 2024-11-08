@@ -16,21 +16,9 @@ let
     rev = "v1.2.5";
     sha256 = "sha256-4lP4++Ewz00siVnMnjcfXhPnJndE6ANDjEWeswkmobg=";
   };
-in
-{
-  # 系统级 zsh 配置
-  programs.zsh.enable = true;
 
-  # 确保必要的包被安装
-  environment.systemPackages = with pkgs; [
-    zsh
-    fzf
-    autojump
-    kubectx
-  ];
-
-  # 用户级配置
-  home-manager.users.yym = { pkgs, ... }: {
+  # 定义共享的 zsh 配置函数
+  mkZshConfig = { ... }: {
     home = {
       stateVersion = "24.05";
       
@@ -111,7 +99,26 @@ in
       };
     };
   };
+in
+{
+  # 系统级 zsh 配置
+  programs.zsh.enable = true;
 
-  # 设置默认 shell
+  # 确保必要的包被安装
+  environment.systemPackages = with pkgs; [
+    zsh
+    fzf
+    autojump
+    kubectx
+  ];
+
+  # 普通用户配置
+  home-manager.users.yym = mkZshConfig;
+
+  # root 用户配置
+  home-manager.users.root = mkZshConfig;
+
+  # 设置所有用户的默认 shell
   users.defaultUserShell = pkgs.zsh;
+  users.users.root.shell = pkgs.zsh;
 } 
