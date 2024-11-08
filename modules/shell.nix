@@ -15,7 +15,6 @@
         "autojump"
         "history-substring-search"
         "fzf"
-        "kube-ps1"
         "kubectl"
       ];
     };
@@ -30,12 +29,7 @@
       export FZF_BASE=${pkgs.fzf}/bin/fzf
       export FZF_COMPLETION_TRIGGER='~~'
 
-      # kube-ps1 配置
-      PROMPT='$(kube_ps1) '$PROMPT
-
       # kubectl 相关别名
-      alias kctx='kubeon && kubectx'
-      alias kns='kubeon && kubens'
       alias k='kubectl'
 
       # 常用工具别名
@@ -53,6 +47,5 @@
     fzf
     autojump
     kubectx   # 提供 kubectx 和 kubens 命令
-    kube-ps1
   ];
 } 

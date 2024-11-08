@@ -22,40 +22,55 @@
 ## 模块说明
 
 ### boot.nix
-- systemd-boot 引导加载程序
-- EFI 启动支持
+- systemd-boot 引导加载程序（替代传统的 GRUB）
+- EFI 变量支持
 
 ### desktop.nix
 - KDE Plasma 5 桌面环境
 - SDDM 显示管理器
-- Fcitx5 中文输入法
+- Fcitx5 中文输入法支持
+  - 中文输入
+  - 配置工具
 
 ### shell.nix
 - Zsh 配置
 - Oh-My-Zsh 设置
   - dracula 主题
   - 实用插件（git, fzf, kubectl 等）
-- 开发环境集成
+  - 语法高亮
+  - 命令自动补全
+- 开发工具集成
+  - FZF 模糊查找
+  - Autojump 快速目录跳转
   - Kubernetes 工具
-  - Docker 别名
-  - Go 环境配置
+  - Docker 快捷命令
+  - Go 开发环境
 
 ### networking.nix
 - NetworkManager 网络管理
-- 基本防火墙配置
-- 开放端口：22(SSH), 80(HTTP), 443(HTTPS)
+- 防火墙配置
+  - SSH (22)
+  - HTTP (80)
+  - HTTPS (443)
 
 ### packages.nix
-- 系统基础软件包
-- 开发工具（Python3, Go 等）
-- 清华大学 Nix 镜像源配置
+- 非自由软件支持
+- 清华大学镜像源
+- 基础工具
+  - Vim/Neovim
+  - Git
+  - Python 3.11
+  - Go 1.21
+  - Docker
 
 ### services.nix
 - OpenSSH 服务
 
 ### users.nix
 - 用户账户配置
-- sudo 和网络管理权限
+- 权限管理
+  - sudo（wheel 组）
+  - 网络管理
 
 ## 使用指南
 

@@ -4,9 +4,11 @@
   # 启用 X11 窗口系统
   services.xserver = {
     enable = true;
-    displayManager.sddm.enable = true;
     desktopManager.plasma5.enable = true;
   };
+
+  # 显示管理器配置
+  services.displayManager.sddm.enable = true;
 
   # 输入法配置
   i18n.inputMethod = {
