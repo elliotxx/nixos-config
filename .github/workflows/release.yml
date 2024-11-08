@@ -24,6 +24,11 @@ jobs:
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
 
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-24.05
+
       - name: Generate Release Notes
         id: release_notes
         run: |
@@ -58,10 +63,13 @@ jobs:
           # Add full changelog link
           echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previoustag.outputs.tag }}...${{ github.ref_name }}" >> CHANGELOG.md
 
-    #   - name: Verify NixOS Configuration
-    #     run: |
-    #       nix-env -i nixos-rebuild
-    #       nixos-rebuild build --flake .#
+      - name: Verify NixOS Configuration
+        run: |
+          # Validate configuration
+          nix-instantiate --expr "import <nixpkgs/nixos> { configuration = ./configuration.nix; }" --dry-run
+          
+          # Try building the system
+          nix-build '<nixpkgs/nixos>' -A system --dry-run -I nixos-config=./configuration.nix
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
