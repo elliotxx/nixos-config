@@ -17,13 +17,17 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-24.05
             
-    #   - name: Check Nix files formatting
-    #     run: |
-    #       nix-shell -p nixpkgs-fmt --run "nixpkgs-fmt --check ."
-          
       - name: Validate Nix syntax
         run: |
           find . -name "*.nix" -type f -exec nix-instantiate --parse {} \;
+          
+      - name: Generate hardware configuration
+        run: |
+          # Install nixos-generate-config
+          nix-env -iA nixos.nixos-install-tools
+          
+          # Generate hardware configuration
+          sudo nixos-generate-config --no-filesystems --show-hardware-config > hardware-configuration.nix
           
       - name: Check NixOS configuration
         run: |
@@ -33,7 +37,7 @@ jobs:
           # Build the system configuration
           nix-build '<nixpkgs/nixos>' -A system --dry-run -I nixos-config=./configuration.nix
           
-          # Validate all imported modules
+          # Validate individual modules (excluding hardware-configuration.nix)
           for module in modules/*.nix; do
             echo "Checking $module..."
             nix-instantiate --expr "with import <nixpkgs/nixos> {}; (import $module)" --dry-run
