@@ -6,7 +6,7 @@ let
     owner = "ohmyzsh";
     repo = "ohmyzsh";
     rev = "b4f9698733d7b29cc495e649e26fd6c3a5dcfcae";  # 使用最新的稳定版本
-    sha256 = "sha256-45qTga1yXg40pdQgqN/iBJmVMxvJ8Qk8c3UVwbxqd2o=";
+    sha256 = "sha256-yvsNYoptmmm3BJeOdyt7zGuayYroraiiumOio9eZZ74=";
   };
 
   # 获取 dracula 主题
