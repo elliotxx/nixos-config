@@ -6,6 +6,7 @@
 
 {
   imports = [
+    <home-manager/nixos>
     ./hardware-configuration.nix
     ./modules/boot.nix
     ./modules/desktop.nix
@@ -15,6 +16,12 @@
     ./modules/users.nix
     ./modules/shell.nix
   ];
+
+  # 确保使用最新的 home-manager
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+  };
 
   # 设置时区为上海
   time.timeZone = "Asia/Shanghai";

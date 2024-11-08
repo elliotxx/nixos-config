@@ -1,51 +1,65 @@
 { config, pkgs, ... }:
 
 {
-  # zsh 配置
-  programs.zsh = {
-    enable = true;
-    
-    # oh-my-zsh 配置
-    ohMyZsh = {
+  home-manager.users.yym = { pkgs, ... }: {
+    programs.zsh = {
       enable = true;
-      theme = "dracula";
-      plugins = [
-        "git"
-        "zsh-autosuggestions"
-        "autojump"
-        "history-substring-search"
-        "fzf"
-        "kubectl"
-      ];
+      
+      oh-my-zsh = {
+        enable = true;
+        theme = "dracula";
+        plugins = [
+          "git"
+          "zsh-autosuggestions"
+          "autojump"
+          "history-substring-search"
+          "fzf"
+          "kubectl"
+        ];
+      };
+
+      # zsh 插件配置更新为新的语法
+      zplug = {
+        enable = true;
+        plugins = [
+          { name = "zsh-users/zsh-syntax-highlighting"; }
+          { name = "zsh-users/zsh-autosuggestions"; }
+        ];
+      };
+
+      # 初始化脚本
+      initExtraFirst = ''
+        # fzf 配置
+        export FZF_BASE=${pkgs.fzf}/bin/fzf
+        export FZF_COMPLETION_TRIGGER='~~'
+      '';
+
+      # 别名配置
+      shellAliases = {
+        k = "kubectl";
+        dk = "docker";
+        dkc = "docker-compose";
+        c = "clear";
+      };
+
+      # 环境变量
+      sessionVariables = {
+        GOPROXY = "https://goproxy.cn,direct";
+      };
     };
-
-    # 语法高亮和自动建议
-    syntaxHighlighting.enable = true;
-    autosuggestions.enable = true;
-
-    # 添加自定义配置
-    interactiveShellInit = ''
-      # fzf 配置
-      export FZF_BASE=${pkgs.fzf}/bin/fzf
-      export FZF_COMPLETION_TRIGGER='~~'
-
-      # kubectl 相关别名
-      alias k='kubectl'
-
-      # 常用工具别名
-      alias dk='docker'
-      alias dkc='docker-compose'
-      alias c='clear'
-
-      # Go 环境配置
-      export GOPROXY=https://goproxy.cn,direct
-    '';
   };
 
-  # 安装相关依赖包
-  environment.systemPackages = with pkgs; [
-    fzf
-    autojump
-    kubectx   # 提供 kubectx 和 kubens 命令
-  ];
+  # 系统级别配置
+  environment = {
+    systemPackages = with pkgs; [
+      fzf
+      autojump
+      kubectx
+    ];
+    shells = with pkgs; [ zsh ];
+  };
+
+  # 设置 zsh 为默认 shell
+  users.defaultUserShell = pkgs.zsh;
+  programs.zsh.enable = true;
 } 
