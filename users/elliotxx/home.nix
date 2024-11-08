@@ -5,14 +5,14 @@ let
 in
 {
   # 用户级配置
-  home-manager.users.yym = { pkgs, ... }: {
+  home-manager.users.elliotxx = { pkgs, ... }: {
     # 启用 home-manager 管理
     programs.home-manager.enable = true;
 
     # 基础配置
     home = {
-      username = "yym";
-      homeDirectory = "/home/yym";
+      username = "elliotxx";
+      homeDirectory = "/home/elliotxx";
       stateVersion = "24.05";
     };
 

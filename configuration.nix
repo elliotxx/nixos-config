@@ -14,7 +14,7 @@
     ./modules/packages.nix
     ./modules/services.nix
     <home-manager/nixos>
-    ./users/yym
+    ./users/elliotxx
     ./modules/shell.nix
   ];
 
