@@ -77,8 +77,8 @@ curl -f -L -# https://github.com/elliotxx/nixos-config/archive/refs/heads/main.z
 # 解压文件
 unzip main.zip
 # 移动文件到当前目录
-cp nixos-config-main/* .
-cp nixos-config-main/.* . 2>/dev/null || true
+cp -r nixos-config-main/* .
+cp -r nixos-config-main/.* . 2>/dev/null || true
 # 清理临时文件
 rm -rf nixos-config-main main.zip
 ```
