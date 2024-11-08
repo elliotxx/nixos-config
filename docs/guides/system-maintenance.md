@@ -382,7 +382,8 @@ sudo reboot
 
 1. `nix-collect-garbage -d` 执行过程：
    ```bash
-   nix-collect-garbage -d
+   # 删除所有旧版本的系统配置，保留当前使用的版本
+   sudo nix-collect-garbage -d
    ```
    - 确定可达性（reachability）从 GC roots
    - 标记所有当前使用的路径
@@ -391,7 +392,17 @@ sudo reboot
    - 删除旧的系统配置
    - 更新 boot loader 配置
 
-2. 垃圾回收的保护机制：
+2. `nix-collect-garbage --delete-older-than` 执行过程：
+   ```bash
+   # 删除指定天数之前的配置（例如 7 天前）
+   sudo nix-collect-garbage --delete-older-than 7d
+   ```
+   - 扫描所有配置的时间戳
+   - 删除指定时间之前的配置
+   - 保留最近的活动配置
+   - 更新系统引导配置
+
+3. 垃圾回收的保护机制：
    - 活动配置文件被保护
    - 当前使用的包被保护
    - boot.loader.configurationLimit 控制保留配置数量

@@ -113,7 +113,7 @@ sudo reboot
 2. 创建普通用户
 ```bash
 # 设置用户密码
-sudo passwd yym
+sudo passwd elliotxx
 ```
 
 3. 更新系统
@@ -137,7 +137,7 @@ virtualbox.guest.x11 = true;
 2. 共享文件夹设置
 ```bash
 # 添加用户到 vboxsf 组
-users.users.yym.extraGroups = [ "wheel" "networkmanager" "vboxsf" ];
+users.users.elliotxx.extraGroups = [ "wheel" "networkmanager" "vboxsf" ];
 ```
 
 3. 显示设置
