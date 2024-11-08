@@ -20,5 +20,6 @@
     zsh
     python311
     go_1_21
+    docker
   ];
 } 
