@@ -13,8 +13,8 @@
     ./modules/networking.nix
     ./modules/packages.nix
     ./modules/services.nix
-    ./modules/users.nix
     <home-manager/nixos>
+    ./users/yym
     ./modules/shell.nix
   ];
 
@@ -22,6 +22,15 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+  };
+
+  # root 用户配置
+  home-manager.users.root = { pkgs, ... }: {
+    home.stateVersion = "24.05";
+    programs.home-manager.enable = true;
+    
+    # 导入共享的 zsh 配置
+    imports = [ (import ./modules/shared.nix { inherit config pkgs; }).mkZshConfig ];
   };
 
   # 设置时区为上海
