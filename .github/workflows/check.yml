@@ -23,8 +23,8 @@ jobs:
 
     - name: Create Temporary Hardware Config
       run: |
-        mkdir -p /tmp/nixos-config
-        cat > /tmp/nixos-config/hardware-configuration.nix << 'EOF'
+        # Create hardware configuration in the current directory
+        cat > hardware-configuration.nix << 'EOF'
         { config, lib, pkgs, modulesPath, ... }:
         {
           imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
@@ -39,8 +39,6 @@ jobs:
           swapDevices = [ ];
         }
         EOF
-        cp -r . /tmp/nixos-config/
-        cd /tmp/nixos-config
 
     - name: Check Configuration Files
       run: |
