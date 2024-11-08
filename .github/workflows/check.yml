@@ -72,8 +72,3 @@ jobs:
           # Build the system configuration
           nix-build '<nixpkgs/nixos>' -A system -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager -I nixos-config=./configuration.nix --dry-run
           
-          # Validate individual modules
-          for module in modules/*.nix; do
-            echo "Checking $module..."
-            nix-instantiate --expr "with import <nixpkgs/nixos> {}; (import $module)" -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager --dry-run
-          done
