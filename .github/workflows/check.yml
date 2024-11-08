@@ -11,53 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Install Nix
-      uses: cachix/install-nix-action@v25
+    - uses: cachix/install-nix-action@v27
       with:
         nix_path: nixpkgs=channel:nixos-unstable
-        extra_nix_config: |
-          experimental-features = nix-command flakes
-          substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org/
-          trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
-
-    - name: Create Temporary Hardware Config
-      run: |
-        # Create hardware configuration in the current directory
-        cat > hardware-configuration.nix << 'EOF'
-        { config, lib, pkgs, modulesPath, ... }:
-        {
-          imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
-          boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "sr_mod" "virtio_blk" ];
-          boot.initrd.kernelModules = [ ];
-          boot.kernelModules = [ ];
-          boot.extraModulePackages = [ ];
-          fileSystems."/" = {
-            device = "/dev/disk/by-label/nixos";
-            fsType = "ext4";
-          };
-          swapDevices = [ ];
-        }
-        EOF
-
-    - name: Check Configuration Files
-      run: |
-        # Check main configuration syntax
-        echo "Checking configuration.nix syntax..."
-        nix-instantiate --parse configuration.nix
-        
-        # Check module configuration syntax
-        echo "Checking module configurations..."
-        for module in modules/*.nix; do
-          echo "Checking syntax: $module"
-          nix-instantiate --parse "$module"
-        done
-
-    - name: Evaluate Full Configuration
-      run: |
-        echo "Evaluating complete NixOS configuration..."
-        nix-env -p /nix/var/nix/profiles/system \
-          --file '<nixpkgs/nixos>' \
-          -qa --drv-path \
-          --arg configuration ./configuration.nix \
-          --show-trace
+    - run: nix-build
