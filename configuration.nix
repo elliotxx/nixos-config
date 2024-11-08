@@ -14,8 +14,8 @@
     ./modules/packages.nix
     ./modules/services.nix
     ./modules/users.nix
-    ./modules/shell.nix
     <home-manager/nixos>
+    ./modules/shell.nix
   ];
 
   # 确保使用最新的 home-manager

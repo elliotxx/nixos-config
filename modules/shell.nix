@@ -63,6 +63,7 @@
           GOPROXY = "https://goproxy.cn,direct";
         };
       };
+
     };
 
     # 确保创建 .zshrc
