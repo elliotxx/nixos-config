@@ -14,4 +14,10 @@ jobs:
     - uses: cachix/install-nix-action@v27
       with:
         nix_path: nixpkgs=channel:nixos-unstable
-    - run: nix-build
+    - name: Check NixOS Configuration
+      run: |
+        # Check configuration.nix syntax
+        nix-instantiate configuration.nix --dry-run
+        
+        # Try to build system configuration
+        nixos-rebuild build --dry-run
