@@ -1,0 +1,29 @@
+# 硬件配置文件（应该由每个系统自己生成）
+hardware-configuration.nix
+
+# Nix 构建输出
+result
+result-*
+
+# 备份文件
+*.bak
+*.backup
+*~
+
+# 编辑器临时文件
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 本地测试文件
+*.local.nix
+
+# 临时文件
+*.tmp
+*.temp
+.direnv/
+
+# 系统生成的文件
+/tmp/ 
