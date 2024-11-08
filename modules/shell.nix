@@ -6,7 +6,7 @@ let
     owner = "dracula";
     repo = "zsh";
     rev = "v1.2.5";  # 使用固定版本
-    sha256 = "sha256-qsDXqhqGz9WPi70yFmHXNXUP4XjnR4q7Ll8AQfXcz0k=";
+    sha256 = "sha256-4lP4++Ewz00siVnMnjcfXhPnJndE6ANDjEWeswkmobg=";
   };
 in
 {
