@@ -10,24 +10,70 @@ permissions:
   discussions: write
 
 jobs:
-  create-release:
+  check-and-release:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-24.05
+            
+      - name: Setup Home Manager
+        run: |
+          nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz home-manager
+          nix-channel --update
+          sudo -i nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz home-manager
+          sudo -i nix-channel --update
           
+      - name: Create hardware configuration
+        run: |
+          cat > hardware-configuration.nix << 'EOF'
+          { config, lib, pkgs, modulesPath, ... }:
+          {
+            imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+            
+            boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "sr_mod" "virtio_blk" ];
+            boot.initrd.kernelModules = [ ];
+            boot.kernelModules = [ "kvm-intel" ];
+            boot.extraModulePackages = [ ];
+            
+            nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+            hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+            
+            fileSystems."/" = {
+              device = "/dev/vda1";
+              fsType = "ext4";
+            };
+            
+            swapDevices = [ ];
+            
+            networking.useDHCP = lib.mkDefault true;
+          }
+          EOF
+
+      - name: Check NixOS configuration
+        run: |
+          export NIX_PATH=$NIX_PATH:home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager:nixos-config=/etc/nixos/configuration.nix
+          
+          sudo mkdir -p /nix/var/nix/profiles/per-user/root/channels
+          sudo ln -s /nix/var/nix/profiles/per-user/root/channels/home-manager/nixos /nix/var/nix/profiles/per-user/root/channels/home-manager/nixos
+          
+          # Validate main configuration
+          nix-instantiate --expr "import <nixpkgs/nixos> { configuration = ./configuration.nix; }" -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager --dry-run
+          
+          # Build the system configuration
+          nix-build '<nixpkgs/nixos>' -A system -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager -I nixos-config=./configuration.nix --dry-run
+
       - name: Get previous tag
         id: previoustag
         run: |
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v27
-        with:
-          nix_path: nixpkgs=channel:nixos-24.05
 
       - name: Generate Release Notes
         id: release_notes
@@ -35,7 +81,6 @@ jobs:
           echo "## NixOS Configuration Changes" > CHANGELOG.md
           echo "" >> CHANGELOG.md
 
-          # Function to append changelog sections
           append_section() {
             local title=$1
             local grep_pattern=$2
@@ -47,7 +92,6 @@ jobs:
             fi
           }
 
-          # Add sections by commit type
           append_section "### ✨ Features" "^feat"
           append_section "### 🐛 Bug Fixes" "^fix"
           append_section "### 📝 Documentation" "^docs"
@@ -60,16 +104,7 @@ jobs:
           append_section "### ⬆️ Dependencies" "^deps"
           append_section "### ⏪ Reverts" "^revert"
 
-          # Add full changelog link
           echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previoustag.outputs.tag }}...${{ github.ref_name }}" >> CHANGELOG.md
-
-      - name: Verify NixOS Configuration
-        run: |
-          # Validate configuration
-          nix-instantiate --expr "import <nixpkgs/nixos> { configuration = ./configuration.nix; }" --dry-run
-          
-          # Try building the system
-          nix-build '<nixpkgs/nixos>' -A system --dry-run -I nixos-config=./configuration.nix
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
