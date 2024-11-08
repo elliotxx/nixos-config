@@ -1,11 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  # 用户配置
+  # 创建用户
   users.users.yym = {
     isNormalUser = true;
-    home = "/home/yym";
-    description = "yym";
-    extraGroups = [ "wheel" "networkmanager" ]; # 启用 sudo 权限和网络管理权限
+    extraGroups = [ "wheel" "networkmanager" "docker" ];
+    shell = pkgs.zsh;  # 确保这里设置了默认 shell
   };
 } 

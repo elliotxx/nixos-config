@@ -1,14 +1,27 @@
 { config, pkgs, ... }:
 
 {
+  # 确保 zsh 相关包被安装
+  environment.systemPackages = with pkgs; [
+    zsh
+    oh-my-zsh
+    fzf
+    autojump
+    kubectx
+  ];
+
+  # 启用 zsh
+  programs.zsh.enable = true;
+
+  # 用户级配置
   home-manager.users.yym = { pkgs, ... }: {
     home.stateVersion = "24.05";
     
     programs = {
-      # zsh 配置
       zsh = {
         enable = true;
         
+        # oh-my-zsh 配置
         oh-my-zsh = {
           enable = true;
           theme = "dracula";
@@ -21,7 +34,7 @@
           ];
         };
 
-        # 插件配置
+        # zsh 插件
         plugins = [
           {
             name = "zsh-autosuggestions";
@@ -43,11 +56,17 @@
           }
         ];
 
-        # 初始化脚本
-        initExtraFirst = ''
+        initExtra = ''
+          # 基础配置
+          export ZSH=${pkgs.oh-my-zsh}/share/oh-my-zsh
+          source $ZSH/oh-my-zsh.sh
+
           # fzf 配置
           export FZF_BASE=${pkgs.fzf}/bin/fzf
           export FZF_COMPLETION_TRIGGER='~~'
+
+          # 其他配置
+          ${builtins.readFile "${pkgs.oh-my-zsh}/share/oh-my-zsh/templates/zshrc.zsh-template"}
         '';
 
         # 别名配置
@@ -61,26 +80,15 @@
         # 环境变量
         sessionVariables = {
           GOPROXY = "https://goproxy.cn,direct";
+          ZSH_THEME = "dracula";
         };
       };
-
     };
 
-    # 确保创建 .zshrc
-    home.file.".zshrc".text = "";
+    # 确保 .zshrc 不被其他程序修改
+    home.file.".zshrc".enable = false;
   };
 
-  # 系统级别配置
-  environment = {
-    systemPackages = with pkgs; [
-      fzf
-      autojump
-      kubectx
-    ];
-    shells = with pkgs; [ zsh ];
-  };
-
-  # 设置 zsh 为默认 shell
+  # 全局 shell 设置
   users.defaultUserShell = pkgs.zsh;
-  programs.zsh.enable = true;
 } 
