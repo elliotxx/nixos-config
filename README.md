@@ -15,6 +15,7 @@
     ├── networking.nix       # 网络配置
     ├── packages.nix         # 系统软件包配置
     ├── services.nix         # 系统服务配置
+    ├── shell.nix           # Shell 环境配置
     └── users.nix            # 用户配置
 ```
 
@@ -28,7 +29,16 @@
 - KDE Plasma 5 桌面环境
 - SDDM 显示管理器
 - Fcitx5 中文输入法
-- Zsh 配置（包含 Oh-My-Zsh）
+
+### shell.nix
+- Zsh 配置
+- Oh-My-Zsh 设置
+  - dracula 主题
+  - 实用插件（git, fzf, kubectl 等）
+- 开发环境集成
+  - Kubernetes 工具
+  - Docker 别名
+  - Go 环境配置
 
 ### networking.nix
 - NetworkManager 网络管理

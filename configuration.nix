@@ -13,6 +13,7 @@
     ./modules/packages.nix
     ./modules/services.nix
     ./modules/users.nix
+    ./modules/shell.nix
   ];
 
   # 设置时区为上海
