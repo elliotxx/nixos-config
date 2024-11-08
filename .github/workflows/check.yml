@@ -21,7 +21,10 @@ jobs:
         run: |
           nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz home-manager
           nix-channel --update
-            
+          # 确保 home-manager channel 被正确安装
+          sudo -i nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz home-manager
+          sudo -i nix-channel --update
+          
       - name: Validate Nix syntax
         run: |
           find . -name "*.nix" -type f -exec nix-instantiate --parse {} \;
@@ -56,16 +59,21 @@ jobs:
           
       - name: Check NixOS configuration
         run: |
-          export NIX_PATH=$NIX_PATH:home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager
+          # 设置 NIX_PATH 包含 home-manager
+          export NIX_PATH=$NIX_PATH:home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager:nixos-config=/etc/nixos/configuration.nix
+          
+          # 创建临时的 home-manager nixos 模块链接
+          sudo mkdir -p /nix/var/nix/profiles/per-user/root/channels
+          sudo ln -s /nix/var/nix/profiles/per-user/root/channels/home-manager/nixos /nix/var/nix/profiles/per-user/root/channels/home-manager/nixos
           
           # Validate main configuration
-          nix-instantiate --expr "import <nixpkgs/nixos> { configuration = ./configuration.nix; }" --dry-run
+          nix-instantiate --expr "import <nixpkgs/nixos> { configuration = ./configuration.nix; }" -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager --dry-run
           
           # Build the system configuration
-          nix-build '<nixpkgs/nixos>' -A system --dry-run -I nixos-config=./configuration.nix
+          nix-build '<nixpkgs/nixos>' -A system -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager -I nixos-config=./configuration.nix --dry-run
           
-          # Validate individual modules (excluding hardware-configuration.nix)
+          # Validate individual modules
           for module in modules/*.nix; do
             echo "Checking $module..."
-            nix-instantiate --expr "with import <nixpkgs/nixos> {}; (import $module)" --dry-run
+            nix-instantiate --expr "with import <nixpkgs/nixos> {}; (import $module)" -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager --dry-run
           done
