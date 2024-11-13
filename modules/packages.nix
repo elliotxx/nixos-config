@@ -26,14 +26,6 @@
       options = "--delete-older-than 30d";
     };
 
-    # 配置 channels
-    nixPath = [
-      "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-      "nixos-config=/etc/nixos/configuration.nix"
-      "/nix/var/nix/profiles/per-user/root/channels"
-      "home-manager=https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz"
-    ];
-
     # 配置 registry，使用正确的属性集格式
     registry = {
       nixos.to = {
@@ -41,12 +33,6 @@
         owner = "NixOS";
         repo = "nixpkgs";
         ref = "nixos-24.05";
-      };
-      home-manager.to = {
-        type = "github";
-        owner = "nix-community";
-        repo = "home-manager";
-        ref = "release-24.05";
       };
     };
   };

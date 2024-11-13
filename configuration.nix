@@ -6,7 +6,6 @@
 
 {
   imports = [
-    # 确保 home-manager 在其他模块之后导入
     ./modules/boot.nix
     ./modules/desktop.nix
     ./modules/networking.nix
@@ -20,21 +19,6 @@
 
   # 将默认编辑器设置为 vim
   environment.variables.EDITOR = "vim";
-
-  # 确保使用最新的 home-manager
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-  };
-
-  # root 用户配置
-  home-manager.users.root = { pkgs, ... }: {
-    home.stateVersion = "24.05";
-    programs.home-manager.enable = true;
-    
-    # 导入共享的 zsh 配置
-    imports = [ (import ./modules/shared.nix { inherit config pkgs; }).mkZshConfig ];
-  };
 
   # 设置时区为上海
   time.timeZone = "Asia/Shanghai";
