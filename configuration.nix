@@ -11,7 +11,6 @@
     ./modules/networking.nix
     ./modules/packages.nix
     ./modules/services.nix
-    ./modules/shell.nix
   ] ++ (import ./users);
 
   # 启用 Flakes 特性以及配套的船新 nix 命令行工具
