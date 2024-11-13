@@ -7,13 +7,11 @@
 {
   imports = [
     # 确保 home-manager 在其他模块之后导入
-    ./hardware-configuration.nix
     ./modules/boot.nix
     ./modules/desktop.nix
     ./modules/networking.nix
     ./modules/packages.nix
     ./modules/services.nix
-    <home-manager/nixos>
     ./users/elliotxx
     ./modules/shell.nix
   ];

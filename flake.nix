@@ -36,7 +36,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.elliotxx = import ./users/elliotxx/home.nix;
+            home-manager.users.elliotxx = import ./users/elliotxx/default.nix;
           }
           
           # # Other modules
