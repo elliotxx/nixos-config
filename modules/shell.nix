@@ -13,6 +13,6 @@
   ];
 
   # 设置所有用户的默认 shell
-  users.defaultUserShell = pkgs.zsh;
-  users.users.root.shell = pkgs.zsh;
+#   users.defaultUserShell = pkgs.zsh;
+#   users.users.root.shell = pkgs.zsh;
 } 

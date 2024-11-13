@@ -37,7 +37,10 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.elliotxx = import ./users/elliotxx/home.nix;
+            home-manager.users.elliotxx = { lib, ... }: {
+              home.homeDirectory = lib.mkForce "/home/elliotxx";
+              imports = [ ./users/elliotxx/home.nix ];
+            };
           }
         ];
       };
