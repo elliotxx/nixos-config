@@ -33,7 +33,7 @@
         system = "aarch64-linux";
         modules = [
           # Hardware configuration
-          ./hardware/vm-aarch64-utm.nix
+          ./hardwares/vm-aarch64-utm.nix
           # Main system configuration
           ./configuration.nix
           
