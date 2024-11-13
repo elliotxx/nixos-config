@@ -12,7 +12,6 @@
     ./modules/networking.nix
     ./modules/packages.nix
     ./modules/services.nix
-    ./users/elliotxx
     ./modules/shell.nix
   ];
 
