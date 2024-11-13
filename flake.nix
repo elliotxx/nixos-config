@@ -28,6 +28,9 @@
           # Main system configuration
           ./configuration.nix
           
+          # Hardware configuration
+          ./hardware-configuration.nix
+          
           # Home Manager configuration
           home-manager.nixosModules.home-manager
           {
