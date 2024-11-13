@@ -33,4 +33,7 @@
   # networking.interfaces.enp0s1.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
+
+  # Set your time zone.
+  time.timeZone = "Asia/Shanghai";
 }
