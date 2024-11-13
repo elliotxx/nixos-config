@@ -18,6 +18,12 @@
     ./modules/shell.nix
   ];
 
+  # 启用 Flakes 特性以及配套的船新 nix 命令行工具
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # 将默认编辑器设置为 vim
+  environment.variables.EDITOR = "vim";
+
   # 确保使用最新的 home-manager
   home-manager = {
     useGlobalPkgs = true;
