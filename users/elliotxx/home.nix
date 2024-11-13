@@ -47,29 +47,50 @@
     enable = true;
     userName = "elliotxx";
     userEmail = "951376975@qq.com";
-  };
-
-  # 启用 starship，这是一个漂亮的 shell 提示符
-  programs.starship = {
-    enable = true;
-    # 自定义配置
-    settings = {
-      add_newline = false;
-      aws.disabled = true;
-      gcloud.disabled = true;
-      line_break.disabled = true;
+    
+    # 基础配置
+    extraConfig = {
+      init.defaultBranch = "main";
+      core.editor = "vim";
+      pull.rebase = true;
+      github.user = "elliotxx";
     };
   };
 
-  programs.bash = {
+  # zsh 相关配置
+  programs.zsh = {
     enable = true;
+    autosuggestions.enable = true;
     enableCompletion = true;
-    bashrcExtra = ''
-      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
+    
+    # oh-my-zsh 配置
+    oh-my-zsh = {
+      enable = true;
+      plugins = [
+        "git"
+        "sudo"
+        "autojump"
+        "history-substring-search"
+        "fzf"
+        "kubectl"
+        "docker"
+        "kubectl"
+      ];
+      theme = "robbyrussell";
+    };
+
+    initExtra = ''
+      # fzf 配置
+      export FZF_BASE=${pkgs.fzf}/bin/fzf
+      export FZF_COMPLETION_TRIGGER='~~'
     '';
 
+    # 自定义别名
     shellAliases = {
       k = "kubectl";
+      dk = "docker";
+      dkc = "docker-compose";
+      c = "clear";
     };
   };
 

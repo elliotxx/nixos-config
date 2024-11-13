@@ -18,7 +18,7 @@
       ];
       
       # 环境配置
-      shell = pkgs.bash;
+      shell = pkgs.zsh;
       createHome = true;
     };
 
