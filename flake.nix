@@ -1,9 +1,12 @@
 {
-  description = "My NixOS configuration";
+  description = "NixOS systems and tools by elliotxx";
 
   inputs = {
     # Official NixOS package source
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+
+    # We use the unstable nixpkgs repo for some packages.
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     # Home Manager for user environment management
     home-manager = {
@@ -29,6 +32,8 @@
         # Architecture: ARM 64-bit (Apple Silicon, Raspberry Pi 4, etc.)
         system = "aarch64-linux";
         modules = [
+          # Hardware configuration
+          ./hardware/vm-aarch64-utm.nix
           # Main system configuration
           ./configuration.nix
           
@@ -44,15 +49,6 @@
           }
         ];
       };
-    };
-
-    # Development shell
-    # Available through 'nix develop'
-    devShell.aarch64-linux = nixpkgs.legacyPackages.aarch64-linux.mkShell {
-      buildInputs = with nixpkgs.legacyPackages.aarch64-linux; [
-        git
-        nixpkgs-fmt
-      ];
     };
   };
 }
