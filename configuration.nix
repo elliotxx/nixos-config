@@ -7,7 +7,7 @@
 {
   imports = [
     ./modules/boot.nix
-    ./users
+    ./users/elliotxx
     ./modules/desktop.nix
     ./modules/networking.nix
     ./modules/packages.nix
