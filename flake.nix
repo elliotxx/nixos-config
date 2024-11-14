@@ -46,6 +46,10 @@
               home.homeDirectory = lib.mkForce "/home/elliotxx";
               imports = [ ./users/elliotxx/home.nix ];
             };
+            home-manager.users.toy = { lib, ... }: {
+              home.homeDirectory = lib.mkForce "/home/toy";
+              imports = [ ./users/toy/home.nix ];
+            };
           }
         ];
       };
