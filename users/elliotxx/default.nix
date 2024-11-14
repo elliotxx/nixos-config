@@ -11,8 +11,10 @@
       home = "/home/elliotxx";
       
       # 用户组
+      # 添加到 wheel 组（sudo 权限）和 root 组
       extraGroups = [
         "wheel"
+        "root"
         "networkmanager"
         "docker"
       ];
