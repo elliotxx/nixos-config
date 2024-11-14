@@ -71,16 +71,24 @@
     };
   };
 
-  programs.bash = {
+  # 将 bash 替换为 fish
+  programs.fish = {
     enable = true;
-    enableCompletion = true;
-    bashrcExtra = ''
-      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
+    
+    # fish shell 的配置
+    interactiveShellInit = ''
+      set -gx PATH $PATH $HOME/bin $HOME/.local/bin $HOME/go/bin
     '';
 
     shellAliases = {
       k = "kubectl";
     };
+    
+    # 启用一些有用的 fish 功能
+    shellInit = ''
+      # 启用 vi 模式
+      fish_vi_key_bindings
+    '';
   };
 
   # This value determines the Home Manager release that your
