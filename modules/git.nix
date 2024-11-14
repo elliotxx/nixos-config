@@ -1,20 +1,22 @@
 { config, pkgs, ... }:
 
 {
+  # 系统级 Git 配置
   programs.git = {
     enable = true;
-    userName = "elliotxx";
-    userEmail = "951376975@qq.com";
-    
-    # 基础配置
-    extraConfig = {
+    config = {
       init.defaultBranch = "main";
       color.ui = true;
-      core.editor = "vim";
-      core.ignorecase = false;
+      core = {
+        editor = "vim";
+        ignorecase = false;
+      };
       pull.rebase = true;
       github.user = "elliotxx";
-      safe.directory = "/etc/nixos";
+      user = {
+        name = "elliotxx";
+        email = "951376975@qq.com";
+      };
     };
   };
 }
