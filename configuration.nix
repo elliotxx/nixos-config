@@ -7,6 +7,7 @@
 {
   imports = [
     ./modules/boot.nix
+    ./modules/shell.nix
     ./modules/desktop.nix
     ./modules/networking.nix
     ./modules/packages.nix
