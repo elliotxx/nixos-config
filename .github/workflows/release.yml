@@ -10,7 +10,7 @@ permissions:
   discussions: write
 
 jobs:
-  check-and-release:
+  release:
     runs-on: ubuntu-latest
 
     steps:
