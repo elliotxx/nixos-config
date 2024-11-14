@@ -56,6 +56,7 @@
       core.ignorecase = false;
       pull.rebase = true;
       github.user = "elliotxx";
+      safe.directory = "/etc/nixos";
     };
   };
 
