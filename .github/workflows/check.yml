@@ -8,7 +8,7 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "arm64"]
     steps:
       - uses: actions/checkout@v4
       
@@ -29,46 +29,16 @@ jobs:
         run: |
           find . -name "*.nix" -type f -exec nix-instantiate --parse {} \;
           
-      - name: Create hardware configuration
-        run: |
-          cat > hardware-configuration.nix << 'EOF'
-          { config, lib, pkgs, modulesPath, ... }:
-          {
-            imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
-            
-            boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "sr_mod" "virtio_blk" ];
-            boot.initrd.kernelModules = [ ];
-            boot.kernelModules = [ "kvm-intel" ];
-            boot.extraModulePackages = [ ];
-            
-            nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-            hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-            
-            # Minimal required filesystem configuration
-            fileSystems."/" = {
-              device = "/dev/vda1";
-              fsType = "ext4";
-            };
-            
-            swapDevices = [ ];
-            
-            # Basic networking
-            networking.useDHCP = lib.mkDefault true;
-          }
-          EOF
-          
       - name: Check NixOS configuration
         run: |
-          # 设置 NIX_PATH 包含 home-manager
-          export NIX_PATH=$NIX_PATH:home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager:nixos-config=/etc/nixos/configuration.nix
+          # Enable Flakes feature
+          export NIX_CONFIG="experimental-features = nix-command flakes"
           
-          # 创建临时的 home-manager nixos 模块链接
-          sudo mkdir -p /nix/var/nix/profiles/per-user/root/channels
-          sudo ln -s /nix/var/nix/profiles/per-user/root/channels/home-manager/nixos /nix/var/nix/profiles/per-user/root/channels/home-manager/nixos
+          # Check flake.nix syntax
+          nix flake check
           
-          # Validate main configuration
-          nix-instantiate --expr "import <nixpkgs/nixos> { configuration = ./configuration.nix; }" -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager --dry-run
+          # Check all NixOS system configurations
+          nix build .#nixosConfigurations.*.config.system.build.toplevel --dry-run
           
-          # Build the system configuration
-          nix-build '<nixpkgs/nixos>' -A system -I home-manager=/nix/var/nix/profiles/per-user/root/channels/home-manager -I nixos-config=./configuration.nix --dry-run
-          
+          # Check all Home Manager configurations
+          nix build .#homeConfigurations.*.activationPackage --dry-run
