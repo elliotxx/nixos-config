@@ -60,7 +60,7 @@
   # zsh 相关配置
   programs.zsh = {
     enable = true;
-    autosuggestions.enable = true;
+    autosuggestion.enable = true;
     enableCompletion = true;
     
     # oh-my-zsh 配置
