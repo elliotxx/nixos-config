@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   check-and-release:
-    runs-on: ["self-hosted", "linux", "arm64"]
+    runs-on: ["ubuntu-latest", "ARM64"]
 
     steps:
       - uses: actions/checkout@v4
