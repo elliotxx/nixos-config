@@ -51,7 +51,9 @@
     # 基础配置
     extraConfig = {
       init.defaultBranch = "main";
+      color.ui = true;
       core.editor = "vim";
+      core.ignorecase = false;
       pull.rebase = true;
       github.user = "elliotxx";
     };

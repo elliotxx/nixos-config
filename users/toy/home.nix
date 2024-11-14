@@ -45,8 +45,18 @@
   # git 相关配置
   programs.git = {
     enable = true;
-    userName = "toy";
+    userName = "elliotxx";
     userEmail = "951376975@qq.com";
+    
+    # 基础配置
+    extraConfig = {
+      init.defaultBranch = "main";
+      color.ui = true;
+      core.editor = "vim";
+      core.ignorecase = false;
+      pull.rebase = true;
+      github.user = "elliotxx";
+    };
   };
 
   # 启用 starship，这是一个漂亮的 shell 提示符
